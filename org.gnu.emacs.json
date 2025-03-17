@@ -1,256 +1,307 @@
-{
-    "app-id": "org.gnu.emacs-pgtk",
-    "runtime" : "org.gnome.Sdk",
-    "runtime-version" : "46",
-    "sdk" : "org.gnome.Sdk",
-    "command": "emacs",
-    "rename-icon": "emacs",
-    "rename-appdata-file": "emacs.metainfo.xml",
-    "rename-desktop-file": "emacs.desktop",
-    "finish-args": [
-        "--share=network",
-        "--share=ipc",
-        "--socket=pulseaudio",
-	"--socket=fallback-x11",
-        "--socket=wayland",
-	"--socket=ssh-auth",
-	"--socket=session-bus",
-	"--talk-name=org.freedesktop.Notifications",
-	"--talk-name=org.freedesktop.Flatpak",
-	"--filesystem=home",
-	"--filesystem=host",
-	"--filesystem=xdg-config",
-	"--filesystem=xdg-config/emacs:create",
-	"--filesystem=xdg-config/git:ro",
-	"--filesystem=xdg-data/emacs:create",
-	"--filesystem=xdg-data/fonts:ro",
-        "--filesystem=/tmp",
-        "--filesystem=/var/tmp",
-	"--filesystem=xdg-run/gvfs"
-    ],
-    "env" : {
-	"INFOPATH": "/app/share/info"
-    },
-    "build-options" : {
-        "cflags": "-O2",
-        "cxxflags": "-O2"
-    },
-    "modules": [
-	{
-            "name": "jansson",
-	    "buildsystem": "cmake",
-	    "config-opts": [
-		"-DJANSSON_BUILD_DOCS=OFF",
-		"-DJANSSON_EXAMPLES=OFF",
-		"-DCMAKE_BUILD_TYPE=Release",
-		"-DJANSSON_WITHOUT_TESTS=ON"
-	    ],
-            "sources": [
-                {
-		    "type": "git",
-                    "url": "https://github.com/akheron/jansson.git",
-		    "tag": "v2.14"
-                }
-            ],
-	    "cleanup": [
-		"*"
-	    ]
-        },
-	{
-	    "name": "treesitter",
-	    "buildsystem": "simple",
-	    "build-commands": [
-		"make PREFIX=$FLATPAK_DEST -j $FLATPAK_BUILDER_N_JOBS",
-		"make install PREFIX=$FLATPAK_DEST -j $FLATPAK_BUILDER_N_JOBS"
-	    ],
-	    "sources": [
-		{
-		    "type": "git",
-                    "url": "https://github.com/tree-sitter/tree-sitter.git",
-		    "tag": "v0.22.2"
-		}
-	    ]
-	},
-	{
-            "name": "libgccjit",
-	    "buildsystem": "autotools",
-	    "config-opts": [
-		"--with-linker-hash-style=gnu",
-		"--enable-checking=release",
-		"--enable-host-shared",
-		"--enable-languages=jit",
-		"--disable-bootstrap",
-		"--disable-gcov",
-		"--disable-libada",
-		"--disable-libgomp",
-		"--disable-liboffloadmic",
-		"--disable-libquadmath",
-		"--disable-libquadmath-support",
-		"--disable-libsanitizer",
-		"--disable-libssp",
-		"--disable-libstdcxx",
-		"--disable-libvtv",
-		"--disable-lto",
-		"--disable-multilib"
-	    ],
-            "sources": [
-                {
-                    "type": "git",
-                    "url": "git://gcc.gnu.org/git/gcc.git",
-                    "tag": "releases/gcc-13.2.0"
-                }
-            ],
-	    "cleanup": [
-		"/include",
-		"/lib/debug",
-		"/share",
-		"/libexec",
-		"*.la",
-		"*.h"
-	    ],
-	    "modules": [
-		{
-		    "name": "gmp",
-		    "buildsystem": "autotools",
-		    "config-opts": [
-			"--enable-static",
-			"--disable-shared",
-			"CFLAGS=-fPIC"
-		    ],
-		    "sources": [
-			{
-			    "type": "archive",
-			    "url": "https://ftp.gnu.org/gnu/gmp/gmp-6.3.0.tar.xz",
-			    "sha256": "a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898"
-			}
-		    ],
-		    "cleanup": [
-			"*"
-		    ]
-		},
-		{
-		    "name": "mpfr",
-		    "buildsystem": "autotools",
-		    "config-opts": [
-			"--enable-static",
-			"--disable-shared",
-			"CFLAGS=-fPIC"
-		    ],
-		    "sources": [
-			{
-			    "type": "git",
-			    "url": "https://gitlab.inria.fr/mpfr/mpfr.git",
-			    "tag": "4.2.1"
-			},
-			{
-			    "type": "patch",
-			    "path": "mpfr-config-warning.patch"
-			}
-		    ],
-		    "cleanup": [
-			"*"
-		    ]
-		},
-		{
-		    "name": "mpc",
-		    "buildsystem": "autotools",
-		    "config-opts": [
-			"--enable-static",
-			"--disable-shared",
-			"CFLAGS=-fPIC"
-		    ],
-		    "sources": [
-			{
-			    "type": "git",
-			    "url": "https://gitlab.inria.fr/mpc/mpc.git",
-			    "tag": "1.3.1"
-			},
-			{
-			    "type": "script",
-			    "commands": [ "autoreconf -fi" ]
-			}
-		    ],
-		    "cleanup": [
-			"*"
-		    ]
 
-		}
-	    ]
+
+{
+  "app-id": "org.gnu.emacs-pgtk",
+  "runtime" : "org.gnome.Sdk",
+  "runtime-version" : "46",
+  "sdk" : "org.gnome.Sdk",
+  "command": "emacs",
+  "rename-icon": "emacs",
+  "rename-appdata-file": "emacs.metainfo.xml",
+  "rename-desktop-file": "emacs.desktop",
+  "finish-args": [
+    "--share=network",
+    "--share=ipc",
+    "--socket=fallback-x11",
+    "--socket=wayland",
+    "--talk-name=org.freedesktop.Notifications",
+    "--talk-name=org.freedesktop.Flatpak",
+    "--filesystem=home",
+    "--filesystem=xdg-config/emacs",
+    "--filesystem=xdg-data/fonts:ro",
+    "--filesystem=/tmp",
+    "--filesystem=/var/tmp",
+    "--filesystem=xdg-run/gvfs"
+  ],
+  "env" : {
+    "INFOPATH": "/app/share/info"
+  },
+  "build-options" : {
+    "cflags": "-O2",
+    "cxxflags": "-O2"
+  },
+  "modules": [
+    {
+      "name": "jansson",
+      "buildsystem": "cmake",
+      "config-opts": [
+        "-DJANSSON_BUILD_DOCS=OFF",
+        "-DJANSSON_EXAMPLES=OFF",
+        "-DCMAKE_BUILD_TYPE=Release",
+        "-DJANSSON_WITHOUT_TESTS=ON"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/akheron/jansson.git",
+          "tag": "v2.14"
+        }
+      ],
+      "cleanup": [
+        "*"
+      ]
+    },
+    {
+      "name": "treesitter",
+      "buildsystem": "simple",
+      "build-commands": [
+        "make PREFIX=$FLATPAK_DEST -j $FLATPAK_BUILDER_N_JOBS",
+        "make install PREFIX=$FLATPAK_DEST -j $FLATPAK_BUILDER_N_JOBS"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/tree-sitter/tree-sitter.git",
+          "tag": "v0.22.2"
+        }
+      ]
+    },
+    {
+      "name": "libgccjit",
+      "buildsystem": "autotools",
+      "config-opts": [
+        "--with-linker-hash-style=gnu",
+        "--enable-checking=release",
+        "--enable-host-shared",
+        "--enable-languages=jit",
+        "--disable-bootstrap",
+        "--disable-gcov",
+        "--disable-libada",
+        "--disable-libgomp",
+        "--disable-liboffloadmic",
+        "--disable-libquadmath",
+        "--disable-libquadmath-support",
+        "--disable-libsanitizer",
+        "--disable-libssp",
+        "--disable-libstdcxx",
+        "--disable-libvtv",
+        "--disable-lto",
+        "--disable-multilib"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "git://gcc.gnu.org/git/gcc.git",
+          "tag": "releases/gcc-13.2.0"
+        }
+      ],
+      "cleanup": [
+        "/include",
+        "/lib/debug",
+        "/share",
+        "/libexec",
+        "*.la",
+        "*.h"
+      ],
+      "modules": [
+        {
+          "name": "gmp",
+          "buildsystem": "autotools",
+          "config-opts": [
+            "--enable-static",
+            "--disable-shared",
+            "CFLAGS=-fPIC"
+          ],
+          "sources": [
+            {
+              "type": "archive",
+              "url": "https://ftp.gnu.org/gnu/gmp/gmp-6.3.0.tar.xz",
+              "sha256": "a3c2b80201b89e68616f4ad30bc66aee4927c3ce50e33929ca819d5c43538898"
+            }
+          ],
+          "cleanup": [
+            "*"
+          ]
         },
         {
-            "name": "emacs",
-            "buildsystem": "autotools",
-	    "build-options" : {
-		"env": {
-		    "CC": "/usr/bin/gcc"
-		}
-	    },
-            "config-opts": [
-                "--with-gnutls",
-		"--with-tree-sitter",
-		"--with-modules",
-		"--with-json",
-		"--with-pgtk",
-		"--with-zlib",
-		"--with-native-compilation"
-            ],
-            "sources": [
-                {
-		    "type": "git",
-                    "url": "git://git.savannah.gnu.org/emacs.git"
-                },
-                {
-                    "type": "patch",
-                    "path": "appdata-launchable.patch"
-                },
-                {
-                    "type": "patch",
-                    "path": "appdata-id.patch"
-                },
-	        {
-                    "type": "patch",
-                    "path": "desktop-rename.patch"
-                }
-            ],
-            "cleanup": [
-		"/share/icons/hicolor/scalable/apps/emacs.ico",
-                "/share/icons/hicolor/scalable/mimetypes/emacs-document.svg",
-                "/share/icons/hicolor/scalable/mimetypes/emacs-document23.svg"
-            ]
+          "name": "mpfr",
+          "buildsystem": "autotools",
+          "config-opts": [
+            "--enable-static",
+            "--disable-shared",
+            "CFLAGS=-fPIC"
+          ],
+          "sources": [
+            {
+              "type": "git",
+              "url": "https://gitlab.inria.fr/mpfr/mpfr.git",
+              "tag": "4.2.1"
+            },
+            {
+              "type": "patch",
+              "path": "mpfr-config-warning.patch"
+            }
+          ],
+          "cleanup": [
+            "*"
+          ]
         },
-		{
-            "name": "podman-wrapper",
-            "buildsystem": "simple",
-            "build-commands": [
-                "ln -s /app/bin/breakout podman"
-            ],
-	    "modules": [
-		{
-		    "name": "breakout",
-		    "buildsystem": "simple",
-		    "build-commands": [
-			"make PREFIX=$FLATPAK_DEST -j $FLATPAK_BUILDER_N_JOBS",
-			"make install PREFIX=$FLATPAK_DEST -j $FLATPAK_BUILDER_N_JOBS",
-			"ln -s $FLATPAK_DEST/bin/breakout $FLATPAK_DEST/bin/toolbox",
-			"ln -s $FLATPAK_DEST/bin/breakout $FLATPAK_DEST/bin/podman"
-		    ],
-		    "sources": [
-			{
-			    "type": "git",
-			    "url": "https://github.com/fejfighter/breakout.git",
-			    "branch": "main"
-			}
-		    ]
-		}
-	    ]
-	}
-    ],
-    "cleanup": [
-	"/share/doc",
-	"/include",
-	"/lib/cmake",
-	"/lib/pkgconfig"
-    ]
+        {
+          "name": "mpc",
+          "buildsystem": "autotools",
+          "config-opts": [
+            "--enable-static",
+            "--disable-shared",
+            "CFLAGS=-fPIC"
+          ],
+          "sources": [
+            {
+              "type": "git",
+              "url": "https://gitlab.inria.fr/mpc/mpc.git",
+              "tag": "1.3.1"
+            },
+            {
+              "type": "script",
+              "commands": [ "autoreconf -fi" ]
+            }
+          ],
+          "cleanup": [
+            "*"
+          ]
 
+        }
+      ]
+    },
+    {
+      "name": "ripgrep",
+      "buildsystem": "simple",
+      "build-commands": [
+        "tar -xzf ripgrep-14.1.1-x86_64-unknown-linux-musl.tar.gz",
+        "install -Dm755 ripgrep-14.1.1-x86_64-unknown-linux-musl/rg /app/bin/rg"
+      ],
+      "sources": [
+        {
+          "type": "file",
+          "url": "https://github.com/BurntSushi/ripgrep/releases/download/14.1.1/ripgrep-14.1.1-x86_64-unknown-linux-musl.tar.gz",
+          "sha256": "4cf9f2741e6c465ffdb7c26f38056a59e2a2544b51f7cc128ef28337eeae4d8e"
+        }
+      ]
+    },
+    {
+      "name": "fd",
+      "buildsystem": "simple",
+      "build-commands": [
+        "tar -xzf fd-v10.2.0-x86_64-unknown-linux-musl.tar.gz",
+        "install -Dm755 fd-v10.2.0-x86_64-unknown-linux-musl.tar.gz /app/bin/fd"
+      ],
+      "sources": [
+        {
+          "type": "file",
+          "url": "https://github.com/sharkdp/fd/releases/download/v10.2.0/fd-v10.2.0-x86_64-unknown-linux-musl.tar.gz",
+          "sha256": "d9bfa25ec28624545c222992e1b00673b7c9ca5eb15393c40369f10b28f9c932"
+        }
+      ]
+    },
+    {
+      "name": "pandoc",
+      "buildsystem": "simple",
+      "build-commands": [
+        "tar -xzf pandoc-3.6.4-linux-amd64.tar.gz",
+        "install -Dm755 pandoc-3.6.4-linux-amd64.tar.gz /app/bin/pandoc"
+      ],
+      "sources": [
+        {
+          "type": "file",
+          "url": "https://github.com/jgm/pandoc/releases/download/3.6.4/pandoc-3.6.4-linux-amd64.tar.gz",
+          "sha256": "5def6e1ff535e397becce292ee97767a947306150b9fb1488003b67ac3417c5e"
+        }
+      ]
+    },
+    {
+      "name": "shellcheck",
+      "buildsystem": "simple",
+      "build-commands": [
+        "tar -xf shellcheck-v0.10.0.linux.x86_64.tar.xz",
+        "install -Dm755 shellcheck-v0.10.0.linux.x86_64.tar.xz /app/bin/shellcheck"
+      ],
+      "sources": [
+        {
+          "type": "file",
+          "url": "https://github.com/koalaman/shellcheck/releases/download/v0.10.0/shellcheck-v0.10.0.linux.x86_64.tar.xz",
+          "sha256": "6c881ab0698e4e6ea235245f22832860544f17ba386442fe7e9d629f8cbedf87"
+        }
+      ]
+    },
+    {
+      "name": "emacs",
+      "buildsystem": "autotools",
+      "build-options" : {
+        "env": {
+          "CC": "/usr/bin/gcc"
+        }
+      },
+      "config-opts": [
+        "--with-gnutls",
+        "--with-tree-sitter",
+        "--with-modules",
+        "--with-json",
+        "--with-pgtk",
+        "--with-zlib",
+        "--with-native-compilation"
+      ],
+      "sources": [
+        {
+          "type": "git",
+          "url": "https://github.com/emacs-mirror/emacs.git",
+          "tag": "emacs-30.1"
+        },
+        {
+          "type": "patch",
+          "path": "appdata-id.patch"
+        },
+        {
+          "type": "patch",
+          "path": "desktop-rename.patch"
+        }
+      ],
+      "cleanup": [
+        "/share/icons/hicolor/scalable/apps/emacs.ico",
+        "/share/icons/hicolor/scalable/mimetypes/emacs-document.svg",
+        "/share/icons/hicolor/scalable/mimetypes/emacs-document23.svg"
+      ]
+    },
+    {
+      "name": "podman-wrapper",
+      "buildsystem": "simple",
+      "build-commands": [
+        "ln -s /app/bin/breakout podman"
+      ],
+      "modules": [
+        {
+          "name": "breakout",
+          "buildsystem": "simple",
+          "build-commands": [
+            "make PREFIX=$FLATPAK_DEST -j $FLATPAK_BUILDER_N_JOBS",
+            "make install PREFIX=$FLATPAK_DEST -j $FLATPAK_BUILDER_N_JOBS",
+            "ln -s $FLATPAK_DEST/bin/breakout $FLATPAK_DEST/bin/toolbox",
+            "ln -s $FLATPAK_DEST/bin/breakout $FLATPAK_DEST/bin/podman"
+          ],
+          "sources": [
+            {
+              "type": "git",
+              "url": "https://github.com/fejfighter/breakout.git",
+              "branch": "main"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "cleanup": [
+    "/share/doc",
+    "/include",
+    "/lib/cmake",
+    "/lib/pkgconfig"
+  ]
 }
- 
+
